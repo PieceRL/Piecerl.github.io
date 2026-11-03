@@ -1,0 +1,136 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PieceRL Games Admin</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 30px 18px;
+      background: #070d1c;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    h1 { color: #39a9ff; }
+
+    .panel {
+      background: #111d33;
+      border: 1px solid #263d60;
+      border-radius: 14px;
+      padding: 24px;
+      margin: 20px 0;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 13px;
+      margin: 9px 0 16px;
+      background: #081426;
+      border: 1px solid #345477;
+      border-radius: 8px;
+      color: white;
+    }
+
+    button {
+      background: #087fe5;
+      color: white;
+      border: 0;
+      padding: 13px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover { background: #159aff; }
+
+    .delete { background: #bd3348; }
+
+    .game {
+      padding: 15px 0;
+      border-bottom: 1px solid #345477;
+    }
+
+    small { color: #9db5d0; }
+
+    #dashboard { display: none; }
+
+    #message, #loginMessage {
+      color: #70c5ff;
+      white-space: pre-wrap;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>⚡ PIECERL GAMES</h1>
+    <p>Private site control panel</p>
+
+    <div class="panel" id="login">
+      <h2>Admin sign in</h2>
+
+      <label>Email</label>
+      <input id="email" type="email" placeholder="Your Supabase email">
+
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Your password">
+
+      <button id="loginBtn">SIGN IN ↗</button>
+      <p id="loginMessage"></p>
+    </div>
+
+    <div id="dashboard">
+      <div class="panel">
+        <h2>Welcome, admin!</h2>
+        <button id="logoutBtn">SIGN OUT</button>
+      </div>
+
+      <div class="panel">
+        <h2>Publish a game</h2>
+
+        <label>Game name</label>
+        <input id="gameName" placeholder="Rocket League 2048">
+
+        <label>Description</label>
+        <textarea id="description" placeholder="Describe your game"></textarea>
+
+        <label>Category</label>
+        <input id="category" placeholder="Racing, Arcade, Puzzle">
+
+        <label>Game HTML file</label>
+        <input id="gameFile" type="file" accept=".html,.htm">
+
+        <small>Choose an HTML game file.</small>
+        <p>OR enter an existing game website URL</p>
+
+        <input id="gameUrl" type="url" placeholder="https://example.com/game">
+
+        <button id="publishBtn">PUBLISH GAME</button>
+        <p id="message"></p>
+      </div>
+
+      <div class="panel">
+        <h2>Published games</h2>
+        <div id="gamesList">Loading games...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
