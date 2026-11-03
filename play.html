@@ -8,12 +8,13 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080e1d;color:white;font-family:Arial,sans-serif}
-header{padding:18px 5%;background:#0d1930;display:flex;justify-content:space-between;align-items:center;gap:15px}
+header{padding:18px 5%;background:#0d1930;display:flex;justify-content:space-between;align-items:center}
 h2{color:#45a5ff;margin:0}
 a{color:#70baff;text-decoration:none}
 main{padding:20px}
-#gameFrame{width:100%;height:calc(100vh - 150px);border:1px solid #234b7c;border-radius:12px;background:white}
+#gameFrame{width:100%;height:calc(100vh - 170px);border:1px solid #234b7c;border-radius:12px;background:white}
 #message{color:#a8bad0}
+#openGame{display:inline-block;margin-top:12px;padding:12px 18px;background:#1689ee;color:white;border-radius:8px;font-weight:bold}
 </style>
 </head>
 <body>
@@ -25,7 +26,7 @@ main{padding:20px}
 <h2 id="gameName">Loading game...</h2>
 <p id="message">Please wait...</p>
 <iframe id="gameFrame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
-<p><a id="openGame" target="_blank" rel="noopener">Open game in a new tab ↗</a></p>
+<a id="openGame" target="_blank" rel="noopener">OPEN GAME IN NEW TAB ↗</a>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -37,29 +38,37 @@ const client=supabase.createClient(
 const id=new URLSearchParams(location.search).get("id");
 
 async function loadGame(){
- if(!id){
-  document.getElementById("message").textContent="No game was selected.";
-  return;
- }
- const {data,error}=await client.from("games")
-  .select("name,description,game_url,storage_path")
-  .eq("id",id).single();
+ const message=document.getElementById("message");
+ try{
+  if(!id) throw new Error("No game was selected.");
 
- if(error||!data){
-  document.getElementById("message").textContent="Game not found.";
-  return;
- }
+  const {data,error}=await client.from("games")
+   .select("name,description,game_url,storage_path")
+   .eq("id",id).single();
 
- let url=data.game_url;
- if(data.storage_path && data.storage_path!=="external"){
-  url=client.storage.from("games").getPublicUrl(data.storage_path).data.publicUrl;
- }
+  if(error) throw error;
+  if(!data) throw new Error("Game not found.");
 
- document.title=data.name+" - The PieceRL Games";
- document.getElementById("gameName").textContent=data.name;
- document.getElementById("message").textContent=data.description||"Enjoy playing!";
- document.getElementById("gameFrame").src=url;
- document.getElementById("openGame").href=url;
+  let url=data.game_url;
+  if(data.storage_path && data.storage_path!=="external"){
+   url=client.storage.from("games")
+    .getPublicUrl(data.storage_path).data.publicUrl;
+  }
+
+  if(!url) throw new Error("This game has no playable URL.");
+
+  document.title=data.name+" - The PieceRL Games";
+  document.getElementById("gameName").textContent=data.name;
+  message.textContent=data.description||"Enjoy playing!";
+  document.getElementById("gameFrame").src=url;
+  const link=document.getElementById("openGame");
+  link.href=url;
+ }catch(error){
+  message.textContent="Could not load game: "+error.message;
+  document.getElementById("gameFrame").style.display="none";
+  document.getElementById("openGame").style.display="none";
+  console.error(error);
+ }
 }
 loadGame();
 </script>
