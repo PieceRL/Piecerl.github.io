@@ -10,7 +10,7 @@
 :root { color-scheme: dark; }
 body {
   margin: 0; min-height: 100vh; padding: 20px;
-  display: flex; justify-content: center; align-items: center;
+ display: block;
   color: #fff; font-family: Arial, Helvetica, sans-serif;
   background:
     radial-gradient(ellipse at 50% 0%, #174b91 0%, transparent 55%),
@@ -337,5 +337,88 @@ document.getElementById("fullscreen").addEventListener("click", async () => {
 
 restart();
 </script>
+<section id="piecerl-games" style="max-width:1100px;margin:50px auto;padding:25px;color:white;font-family:Arial,sans-serif;">
+  <h2 style="color:#39a9ff;font-size:32px;">🎮 The PieceRL Games</h2>
+  <p style="color:#b9d8ff;">Play games created and published by PieceRL.</p>
+  <div id="gameGallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;">
+    Loading games...
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://lckcylidlpqwsiieloqp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_SjuAO1_zPb19ZY4vNxEzWg_wvlymKiV";
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadPieceRLGames() {
+  const gallery = document.getElementById("gameGallery");
+
+  const { data, error } = await supabaseClient
+    .from("games")
+    .select("id,name,description,category,game_url,storage_path")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    gallery.textContent = "Could not load games. Please try again later.";
+    console.error(error);
+    return;
+  }
+
+  gallery.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    gallery.textContent = "New games coming soon!";
+    return;
+  }
+
+  data.forEach(game => {
+    const card = document.createElement("div");
+    card.style.cssText = "background:#111d33;border:1px solid #345580;border-radius:14px;padding:20px;";
+
+    const title = document.createElement("h3");
+    title.textContent = game.name;
+    title.style.color = "#39a9ff";
+
+    const description = document.createElement("p");
+    description.textContent = game.description || "";
+    description.style.color = "#b9d8ff";
+
+    const category = document.createElement("small");
+    category.textContent = game.category || "Game";
+
+    const button = document.createElement("button");
+    button.textContent = "PLAY GAME ↗";
+    button.style.cssText = "display:block;margin-top:15px;padding:12px 18px;background:#087fe5;color:white;border:0;border-radius:8px;cursor:pointer;font-weight:bold;";
+
+    button.onclick = async () => {
+      let url = game.game_url;
+
+      if (game.storage_path) {
+        const { data: fileData } = supabaseClient.storage
+          .from("games")
+          .getPublicUrl(game.storage_path);
+        url = fileData.publicUrl;
+      }
+
+      try {
+        const validUrl = new URL(url);
+        if (validUrl.protocol === "https:" || validUrl.protocol === "http:") {
+          window.open(validUrl.href, "_blank", "noopener");
+        }
+      } catch {
+        alert("This game has an invalid URL.");
+      }
+    };
+
+    card.append(title, description, category, button);
+    gallery.appendChild(card);
+  });
+}
+
+loadPieceRLGames();
+</script>
+ 
 </body>
 </html>
