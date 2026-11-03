@@ -60,9 +60,9 @@ async function loadGame(){
   document.title=data.name+" - The PieceRL Games";
   document.getElementById("gameName").textContent=data.name;
   message.textContent=data.description||"Enjoy playing!";
-  document.getElementById("gameFrame").src=url;
+  document.getElementById("gameFrame").src="https://piecerl.github.io/";
   const link=document.getElementById("openGame");
-  link.href=url;
+  link.href="https://piecerl.github.io/";
  }catch(error){
   message.textContent="Could not load game: "+error.message;
   document.getElementById("gameFrame").style.display="none";
