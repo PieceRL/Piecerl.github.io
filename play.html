@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,49 +28,16 @@ main{padding:20px}
 <iframe id="gameFrame" allow="fullscreen; autoplay; gamepad" allowfullscreen></iframe>
 <a id="openGame" target="_blank" rel="noopener">OPEN GAME IN NEW TAB ↗</a>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
+
 <script>
-const client=supabase.createClient(
-  window.PIECERL_CONFIG.supabaseUrl,
-  window.PIECERL_CONFIG.supabaseAnonKey
-);
-const id=new URLSearchParams(location.search).get("id");
+const gameUrl = "https://piecerl.github.io/rl2048.html";
 
-async function loadGame(){
- const message=document.getElementById("message");
- try{
-  if(!id) throw new Error("No game was selected.");
-
-  const {data,error}=await client.from("games")
-   .select("name,description,game_url,storage_path")
-   .eq("id",id).single();
-
-  if(error) throw error;
-  if(!data) throw new Error("Game not found.");
-
-  let url=data.game_url;
-  if(data.storage_path && data.storage_path!=="external"){
-   url=client.storage.from("games")
-    .getPublicUrl(data.storage_path).data.publicUrl;
-  }
-
-  if(!url) throw new Error("This game has no playable URL.");
-
-  document.title=data.name+" - The PieceRL Games";
-  document.getElementById("gameName").textContent=data.name;
-  message.textContent=data.description||"Enjoy playing!";
-  document.getElementById("gameFrame").src="https://piecerl.github.io/";
-  const link=document.getElementById("openGame");
-  link.href="https://piecerl.github.io/";
- }catch(error){
-  message.textContent="Could not load game: "+error.message;
-  document.getElementById("gameFrame").style.display="none";
-  document.getElementById("openGame").style.display="none";
-  console.error(error);
- }
-}
-loadGame();
+document.title = "RL 2048 - The PieceRL Games";
+document.getElementById("gameName").textContent = "RL 2048";
+document.getElementById("message").textContent = "Enjoy playing!";
+document.getElementById("gameFrame").src = gameUrl;
+document.getElementById("openGame").href = gameUrl;
 </script>
 </body>
 </html>
+```
