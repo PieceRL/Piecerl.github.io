@@ -395,7 +395,7 @@ async function loadPieceRLGames() {
     button.onclick = async () => {
       let url = game.game_url;
 
-      if (game.storage_path) {
+      if (game.storage_path && game.storage_path !== "external") {
         const { data: fileData } = supabaseClient.storage
           .from("games")
           .getPublicUrl(game.storage_path);
