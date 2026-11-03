@@ -1,424 +1,103 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="google-site-verification" content="olOyioZO_1xEHpuhv67Z2yx0VDulZ245QUx_LqICFUg" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RL 2048 - Made By @PieceRL on YT</title>
+<title>The PieceRL Games</title>
 <style>
-* { box-sizing: border-box; }
-:root { color-scheme: dark; }
-body {
-  margin: 0; min-height: 100vh; padding: 20px;
- display: block;
-  color: #fff; font-family: Arial, Helvetica, sans-serif;
-  background:
-    radial-gradient(ellipse at 50% 0%, #174b91 0%, transparent 55%),
-    linear-gradient(145deg, #050d20, #101d3b);
-}
-.game { width: min(100%, 520px); text-align: center; }
-h1 {
-  margin: 0 0 4px; font-size: clamp(42px, 10vw, 66px);
-  font-style: italic; letter-spacing: -3px;
-  text-shadow: 0 0 20px #008cff88;
-}
-h1 span { color: #13baff; }
-.creator {
-  color: #8dbfff; font-size: 13px; font-weight: bold;
-  letter-spacing: 2px; margin: 0 0 17px;
-  text-shadow: 0 0 10px #008cff;
-}
-.top { display: flex; gap: 10px; margin-bottom: 16px; }
-.score {
-  flex: 1; padding: 10px; border-radius: 12px;
-  background: #172849; border: 1px solid #345580;
-  color: #b9d8ff; font-size: 12px; letter-spacing: 1px;
-}
-.score strong { display: block; margin-top: 4px; color: white; font-size: 25px; }
-.board {
-  width: 100%; aspect-ratio: 1; padding: 9px;
-  display: grid; grid-template: repeat(4, 1fr) / repeat(4, 1fr);
-  gap: 8px; border-radius: 17px; border: 3px solid #35527f;
-  background: #0b1933; box-shadow: 0 0 35px #006eff40;
-  touch-action: none; user-select: none;
-}
-.cell {
-  min-width: 0; min-height: 0; position: relative;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden; border-radius: 10px; background: #263653;
-}
-.tile {
-  position: relative; width: 100%; height: 100%; border-radius: 9px;
-  border: 2px solid #ffffff45; display: flex; flex-direction: column;
-  justify-content: center; align-items: center; overflow: hidden;
-  animation: pop .13s ease-out;
-}
-@keyframes pop { from { transform: scale(.82); opacity: .5; } to { transform: scale(1); opacity: 1; } }
-.number {
-  position: absolute; z-index: 3; top: 4px; left: 6px;
-  font-size: clamp(15px, 4.5vw, 24px); font-weight: 900;
-  text-shadow: 0 2px 5px #000;
-}
-.car {
-  position: relative; width: 72%; height: 31%; margin-top: 12px;
-  border: 2px solid #d6f4ff; border-radius: 45% 48% 25% 25%;
-  background: linear-gradient(160deg, #e2f8ff, #1689ff 45%, #062b78);
-  transform: skewX(-9deg); box-shadow: 0 5px 8px #0009, inset 0 3px 5px #ffffff80;
-}
-.car::before {
-  content: ""; position: absolute; width: 48%; height: 65%;
-  left: 25%; top: -52%; border: 2px solid #c7efff;
-  border-radius: 60% 60% 15% 15%;
-  background: linear-gradient(140deg, #b9ecff, #063e89);
-}
-.car::after {
-  content: ""; position: absolute; width: 125%; height: 18%;
-  left: -12%; bottom: -19%; border-radius: 50%;
-  background: #050b19; box-shadow: 0 3px 0 #9bb4d2;
-}
-.wheel {
-  position: absolute; z-index: 2; width: 16%; height: 35%;
-  left: 8%; bottom: -27%; border-radius: 50%;
-  background: #101522; border: 2px solid #a9b9d2;
-}
-.wheel.right { left: auto; right: 8%; }
-.car-label {
-  z-index: 3; margin-top: 12px; font-size: clamp(7px, 2vw, 10px);
-  font-weight: 900; letter-spacing: .4px; text-shadow: 0 2px 4px #000;
-}
-.v2 { background: linear-gradient(145deg,#087cff,#00338c); }
-.v4 { background: linear-gradient(145deg,#ff5757,#9b1010); }
-.v8 { background: linear-gradient(145deg,#c052ff,#6400b3); }
-.v16 { background: linear-gradient(145deg,#ffe16a,#a85c00); }
-.v32 { background: linear-gradient(145deg,#45ec83,#007d39); }
-.v64 { background: linear-gradient(145deg,#ff8c32,#a92b00); }
-.v128 { background: linear-gradient(145deg,#39e7ff,#006caa); }
-.v256 { background: linear-gradient(145deg,#ff45bc,#a00068); }
-.v512 { background: linear-gradient(145deg,#d9d9ff,#5555aa); }
-.v1024 { background: linear-gradient(145deg,#f5e8a0,#a47b13); }
-.v2048 { background: linear-gradient(145deg,#ffffff,#087dff); }
-.controls { margin-top: 15px; color: #b8d5ff; font-size: 14px; line-height: 1.55; }
-.message { min-height: 24px; margin-top: 8px; color: #53d9ff; font-weight: bold; }
-.buttons { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-button {
-  margin-top: 12px; padding: 12px 22px; border-radius: 11px;
-  border: 1px solid #69caff; color: white; font-size: 15px;
-  font-weight: bold; cursor: pointer;
-  background: linear-gradient(135deg,#168cff,#0045db);
-  box-shadow: 0 4px 18px #006eff55;
-}
-button:hover { filter: brightness(1.15); }
-button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
-@media (max-width: 400px) {
-  body { padding: 10px; }
-  .board { gap: 6px; padding: 7px; }
-  .creator { font-size: 11px; }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#080e1d;color:white;font-family:Arial,sans-serif}
+header{padding:25px 6%;background:#0d1930;border-bottom:1px solid #173c70}
+h1{margin:0;color:#45a5ff;font-size:30px}
+header p{color:#9bb4d2;margin:8px 0 0}
+main{max-width:1250px;margin:auto;padding:30px 20px}
+.search{width:100%;padding:15px;border-radius:10px;border:1px solid #234b7c;background:#101e35;color:white;font-size:16px;margin-bottom:25px}
+h2{color:#70baff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+.card{background:#101d32;border:1px solid #1b3d68;border-radius:14px;overflow:hidden;transition:.2s}
+.card:hover{transform:translateY(-5px);border-color:#399cff}
+.thumb{height:145px;background:linear-gradient(135deg,#123d75,#087bba);display:flex;align-items:center;justify-content:center;font-size:48px}
+.info{padding:15px}
+.info h3{margin:0 0 8px}
+.info p{color:#a8bad0;font-size:13px;min-height:32px}
+.play{display:block;text-align:center;text-decoration:none;background:#1689ee;color:white;padding:11px;border-radius:8px;font-weight:bold}
+.play:hover{background:#40a5ff}
+.empty{color:#a8bad0}
 </style>
 </head>
 <body>
-<main class="game">
-  <h1>RL <span>2048</span></h1>
-  <div class="creator">Made By @PieceRL on YT</div>
-
-  <div class="top">
-    <div class="score">SCORE<strong id="score">0</strong></div>
-    <div class="score">BEST<strong id="best">0</strong></div>
-  </div>
-
-  <div class="board" id="board" aria-label="2048 game board"></div>
-
-  <div class="controls">
-    Use the arrow keys or swipe to move the cars.<br>
-    Combine matching cars to unlock better cars!
-  </div>
-  <div class="message" id="message" aria-live="polite"></div>
-
-  <div class="buttons">
-    <button type="button" id="restart">↻ Restart Game</button>
-    <button type="button" id="fullscreen">⛶ Fullscreen</button>
-  </div>
+<header>
+<h1>🎮 THE PIECERL GAMES</h1>
+<p>Play amazing games, all in one place.</p>
+</header>
+<main>
+<input class="search" id="search" placeholder="🔎 Search games...">
+<h2>All Games</h2>
+<div class="grid" id="games">
+<p class="empty">Loading games...</p>
+</div>
 </main>
 
-<script>
-"use strict";
-
-const boardElement = document.getElementById("board");
-const scoreElement = document.getElementById("score");
-const bestElement = document.getElementById("best");
-const messageElement = document.getElementById("message");
-
-let grid = [];
-let score = 0;
-let best = 0;
-let finished = false;
-let won = false;
-
-try { best = Number(localStorage.getItem("rl2048best")) || 0; } catch (_) {}
-
-const carNames = {
-  2: "OCTANE", 4: "DOMINUS", 8: "FENNEC", 16: "BREAKOUT",
-  32: "MERC", 64: "ENDO", 128: "TAKUMI", 256: "DINGO",
-  512: "BATMOBILE", 1024: "F1 CAR", 2048: "GOLDEN CAR"
-};
-
-function makeEmptyGrid() {
-  return Array.from({ length: 4 }, () => [0, 0, 0, 0]);
-}
-
-function addRandomTile() {
-  const empty = [];
-  for (let r = 0; r < 4; r++) {
-    for (let c = 0; c < 4; c++) {
-      if (grid[r][c] === 0) empty.push([r, c]);
-    }
-  }
-  if (!empty.length) return;
-  const [r, c] = empty[Math.floor(Math.random() * empty.length)];
-  grid[r][c] = Math.random() < 0.9 ? 2 : 4;
-}
-
-function render() {
-  boardElement.innerHTML = "";
-  for (let r = 0; r < 4; r++) {
-    for (let c = 0; c < 4; c++) {
-      const cell = document.createElement("div");
-      cell.className = "cell";
-      const value = grid[r][c];
-
-      if (value) {
-        const tile = document.createElement("div");
-        tile.className = "tile v" + Math.min(value, 2048);
-
-        const number = document.createElement("div");
-        number.className = "number";
-        number.textContent = value;
-
-        const car = document.createElement("div");
-        car.className = "car";
-        const wheel1 = document.createElement("div");
-        wheel1.className = "wheel";
-        const wheel2 = document.createElement("div");
-        wheel2.className = "wheel right";
-        car.append(wheel1, wheel2);
-
-        const label = document.createElement("div");
-        label.className = "car-label";
-        label.textContent = carNames[value] || "SUPER CAR";
-
-        tile.append(number, car, label);
-        cell.appendChild(tile);
-      }
-      boardElement.appendChild(cell);
-    }
-  }
-  scoreElement.textContent = score;
-  bestElement.textContent = best;
-}
-
-function move(direction) {
-  if (finished) return;
-  let changed = false;
-
-  for (let i = 0; i < 4; i++) {
-    let line = [];
-    for (let j = 0; j < 4; j++) {
-      if (direction === "left") line.push(grid[i][j]);
-      else if (direction === "right") line.push(grid[i][3 - j]);
-      else if (direction === "up") line.push(grid[j][i]);
-      else line.push(grid[3 - j][i]);
-    }
-
-    const original = [...line];
-    line = line.filter(value => value !== 0);
-
-    for (let j = 0; j < line.length - 1; j++) {
-      if (line[j] === line[j + 1]) {
-        line[j] *= 2;
-        score += line[j];
-        if (line[j] === 2048) won = true;
-        line.splice(j + 1, 1);
-      }
-    }
-    while (line.length < 4) line.push(0);
-
-    for (let j = 0; j < 4; j++) {
-      if (original[j] !== line[j]) changed = true;
-      if (direction === "left") grid[i][j] = line[j];
-      else if (direction === "right") grid[i][3 - j] = line[j];
-      else if (direction === "up") grid[j][i] = line[j];
-      else grid[3 - j][i] = line[j];
-    }
-  }
-
-  if (!changed) return;
-  addRandomTile();
-
-  if (score > best) {
-    best = score;
-    try { localStorage.setItem("rl2048best", String(best)); } catch (_) {}
-  }
-
-  if (won) {
-    messageElement.textContent = "🏆 YOU UNLOCKED THE GOLDEN CAR!";
-    won = false;
-  }
-
-  render();
-  if (!canMove()) {
-    finished = true;
-    messageElement.textContent = "GAME OVER! Press Restart to play again.";
-  }
-}
-
-function canMove() {
-  for (let r = 0; r < 4; r++) {
-    for (let c = 0; c < 4; c++) {
-      if (grid[r][c] === 0) return true;
-      if (c < 3 && grid[r][c] === grid[r][c + 1]) return true;
-      if (r < 3 && grid[r][c] === grid[r + 1][c]) return true;
-    }
-  }
-  return false;
-}
-
-function restart() {
-  grid = makeEmptyGrid();
-  score = 0;
-  finished = false;
-  won = false;
-  messageElement.textContent = "";
-  addRandomTile();
-  addRandomTile();
-  render();
-}
-
-document.addEventListener("keydown", event => {
-  const directions = {
-    ArrowLeft: "left", ArrowRight: "right",
-    ArrowUp: "up", ArrowDown: "down"
-  };
-  if (directions[event.key]) {
-    event.preventDefault();
-    move(directions[event.key]);
-  }
-});
-
-let touchStartX = 0;
-let touchStartY = 0;
-boardElement.addEventListener("touchstart", event => {
-  const touch = event.changedTouches[0];
-  touchStartX = touch.clientX;
-  touchStartY = touch.clientY;
-}, { passive: true });
-
-boardElement.addEventListener("touchend", event => {
-  const touch = event.changedTouches[0];
-  const dx = touch.clientX - touchStartX;
-  const dy = touch.clientY - touchStartY;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 25) return;
-  if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? "right" : "left");
-  else move(dy > 0 ? "down" : "up");
-}, { passive: true });
-
-document.getElementById("restart").addEventListener("click", restart);
-
-document.getElementById("fullscreen").addEventListener("click", async () => {
-  try {
-    if (!document.fullscreenElement) {
-      await document.documentElement.requestFullscreen();
-    } else {
-      await document.exitFullscreen();
-    }
-  } catch (error) {
-    messageElement.textContent = "Fullscreen isn't available in this browser.";
-  }
-});
-
-restart();
-</script>
-<section id="piecerl-games" style="max-width:1100px;margin:50px auto;padding:25px;color:white;font-family:Arial,sans-serif;">
-  <h2 style="color:#39a9ff;font-size:32px;">🎮 The PieceRL Games</h2>
-  <p style="color:#b9d8ff;">Play games created and published by PieceRL.</p>
-  <div id="gameGallery" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;">
-    Loading games...
-  </div>
-</section>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script>
-const SUPABASE_URL = "https://lckcylidlpqwsiieloqp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SjuAO1_zPb19ZY4vNxEzWg_wvlymKiV";
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const grid = document.getElementById("games");
+let allGames = [];
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-async function loadPieceRLGames() {
-  const gallery = document.getElementById("gameGallery");
-
-  const { data, error } = await supabaseClient
-    .from("games")
+async function loadGames(){
+  const {data,error} = await client.from("games")
     .select("id,name,description,category,game_url,storage_path")
-    .order("created_at", { ascending: false });
+    .order("created_at",{ascending:false});
 
-  if (error) {
-    gallery.textContent = "Could not load games. Please try again later.";
-    console.error(error);
+  if(error){
+    grid.innerHTML='<p class="empty">Could not load games. Please try again later.</p>';
     return;
   }
+  allGames=data||[];
+  showGames(allGames);
+}
 
-  gallery.innerHTML = "";
-
-  if (!data || data.length === 0) {
-    gallery.textContent = "New games coming soon!";
+function showGames(games){
+  grid.innerHTML="";
+  if(!games.length){
+    grid.innerHTML='<p class="empty">No games published yet.</p>';
     return;
   }
-
-  data.forEach(game => {
-    const card = document.createElement("div");
-    card.style.cssText = "background:#111d33;border:1px solid #345580;border-radius:14px;padding:20px;";
-
-    const title = document.createElement("h3");
-    title.textContent = game.name;
-    title.style.color = "#39a9ff";
-
-    const description = document.createElement("p");
-    description.textContent = game.description || "";
-    description.style.color = "#b9d8ff";
-
-    const category = document.createElement("small");
-    category.textContent = game.category || "Game";
-
-    const button = document.createElement("button");
-    button.textContent = "PLAY GAME ↗";
-    button.style.cssText = "display:block;margin-top:15px;padding:12px 18px;background:#087fe5;color:white;border:0;border-radius:8px;cursor:pointer;font-weight:bold;";
-
-    button.onclick = async () => {
-      let url = game.game_url;
-
-      if (game.storage_path && game.storage_path !== "external") {
-        const { data: fileData } = supabaseClient.storage
-          .from("games")
-          .getPublicUrl(game.storage_path);
-        url = fileData.publicUrl;
-      }
-
-      try {
-        const validUrl = new URL(url);
-        if (validUrl.protocol === "https:" || validUrl.protocol === "http:") {
-          window.open(validUrl.href, "_blank", "noopener");
-        }
-      } catch {
-        alert("This game has an invalid URL.");
-      }
-    };
-
-    card.append(title, description, category, button);
-    gallery.appendChild(card);
+  games.forEach(game=>{
+    const url = game.storage_path && game.storage_path !== "external"
+      ? client.storage.from("games").getPublicUrl(game.storage_path).data.publicUrl
+      : game.game_url;
+    const card=document.createElement("article");
+    card.className="card";
+    const thumb=document.createElement("div");
+    thumb.className="thumb";
+    thumb.textContent="🎮";
+    const info=document.createElement("div");
+    info.className="info";
+    const title=document.createElement("h3");
+    title.textContent=game.name;
+    const description=document.createElement("p");
+    description.textContent=game.description||game.category||"Play now!";
+    const link=document.createElement("a");
+    link.className="play";
+    link.href="play.html?id="+encodeURIComponent(game.id);
+    link.textContent="PLAY GAME";
+    info.append(title,description,link);
+    card.append(thumb,info);
+    grid.append(card);
   });
 }
 
-loadPieceRLGames();
+document.getElementById("search").addEventListener("input",e=>{
+  const term=e.target.value.toLowerCase();
+  showGames(allGames.filter(g=>
+    (g.name||"").toLowerCase().includes(term)||
+    (g.category||"").toLowerCase().includes(term)
+  ));
+});
+loadGames();
 </script>
- 
 </body>
 </html>
